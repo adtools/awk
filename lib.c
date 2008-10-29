@@ -57,15 +57,11 @@ static Cell dollar1 = { OCELL, CFLD, NULL, "", 0.0, FLD|STR|DONTFREE };
 
 void recinit(unsigned int n)
 {
-	record = (char *) malloc(n);
-	fields = (char *) malloc(n);
-	fldtab = (Cell **) calloc((nfields+1), sizeof(Cell *));
-	if (record == NULL || fields == NULL || fldtab == NULL)
+	if ( (record = (char *) malloc(n)) == NULL
+	  || (fields = (char *) malloc(n+1)) == NULL
+	  || (fldtab = (Cell **) calloc(nfields+1, sizeof(Cell *))) == NULL
+	  || (fldtab[0] = (Cell *) malloc(sizeof(Cell))) == NULL )
 		FATAL("out of space for $0 and fields");
-
-	fldtab[0] = (Cell *) malloc(sizeof (Cell));
-	if (fldtab[0] == NULL)
-		FATAL("out of space for fields");
 	*fldtab[0] = dollar0;
 	fldtab[0]->sval = record;
 	fldtab[0]->nval = tostring("0");

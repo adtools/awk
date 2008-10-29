@@ -22,7 +22,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-const char	*version = "version 20070501";
+const char	*version = "version 20071023";
 
 #define DEBUG
 #include <stdio.h>
@@ -35,7 +35,7 @@ const char	*version = "version 20070501";
 #include "ytab.h"
 
 #ifdef __amigaos4__
-const char *amiversion __attribute__((used)) = "$VER: awk 52.2 (26.10.07)";
+const char *amiversion __attribute__((used)) = "$VER: awk 53.1 (29.10.08)";
 #endif
 
 extern	char	**environ;

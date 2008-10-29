@@ -842,6 +842,8 @@ int format(char **pbuf, int *pbufsize, const char *s, Node *a)	/* printf-like co
 			if (isalpha((uschar)*s) && *s != 'l' && *s != 'h' && *s != 'L')
 				break;	/* the ansi panoply */
 			if (*s == '*') {
+				if (a == NULL)
+					FATAL("not enough args in printf(%s)", os);
 				x = execute(a);
 				a = a->nnext;
 				sprintf(t-1, "%d", fmtwd=(int) getfval(x));
@@ -1503,6 +1505,64 @@ Cell *bltin(Node **a, int n)	/* builtin functions. a[0] is type, a[1] is arg lis
 			tempfree(y);
 			nextarg = nextarg->nnext;
 		}
+		break;
+	case FCOMPL:
+		u = ~((int)getfval(x));
+		break;
+	case FAND:
+		if (nextarg == 0) {
+			WARNING("and requires two arguments; returning 0");
+			u = 0;
+			break;
+		}
+		y = execute(a[1]->nnext);
+		u = ((int)getfval(x)) & ((int)getfval(y));
+		tempfree(y);
+		nextarg = nextarg->nnext;
+		break;
+	case FFOR:
+		if (nextarg == 0) {
+			WARNING("or requires two arguments; returning 0");
+			u = 0;
+			break;
+		}
+		y = execute(a[1]->nnext);
+		u = ((int)getfval(x)) | ((int)getfval(y));
+		tempfree(y);
+		nextarg = nextarg->nnext;
+		break;
+	case FXOR:
+		if (nextarg == 0) {
+			WARNING("or requires two arguments; returning 0");
+			u = 0;
+			break;
+		}
+		y = execute(a[1]->nnext);
+		u = ((int)getfval(x)) ^ ((int)getfval(y));
+		tempfree(y);
+		nextarg = nextarg->nnext;
+		break;
+	case FLSHIFT:
+		if (nextarg == 0) {
+			WARNING("or requires two arguments; returning 0");
+			u = 0;
+			break;
+		}
+		y = execute(a[1]->nnext);
+		u = ((int)getfval(x)) << ((int)getfval(y));
+		tempfree(y);
+		nextarg = nextarg->nnext;
+		break;
+	case FRSHIFT:
+		if (nextarg == 0) {
+			WARNING("or requires two arguments; returning 0");
+			u = 0;
+			break;
+		}
+		y = execute(a[1]->nnext);
+		u = ((int)getfval(x)) >> ((int)getfval(y));
+		tempfree(y);
+		nextarg = nextarg->nnext;
 		break;
 	case FSYSTEM:
 		fflush(stdout);		/* in case something is buffered already */
