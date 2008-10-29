@@ -1,0 +1,14 @@
+AmigaOS4 port of the official AWK/NAWK.
+
+The official sourcecode has been updated May 5, 2007 + changes from the OpenBSD version.
+
+Please read the original README file for information.
+
+For comments on the port and possible bugfixes, please send an email to me.
+
+To install it, just unpack it to SDK:
+
+Best regards,
+hnl_dk - Henning Nielsen Lund
+
+email: hnl_dk@amigaos.dk
