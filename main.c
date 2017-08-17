@@ -22,7 +22,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ****************************************************************/
 
-const char	*version = "version 20071023";
+const char	*version = "version 20121220";
 
 #define DEBUG
 #include <stdio.h>
@@ -35,13 +35,14 @@ const char	*version = "version 20071023";
 #include "ytab.h"
 
 #ifdef __amigaos4__
-const char *amiversion __attribute__((used)) = "$VER: awk 53.1 (29.10.08)";
+const char *amiversion __attribute__((used)) = "$VER: awk 54.1 (17.08.17)";
 #endif
 
 extern	char	**environ;
 extern	int	nfields;
 
 int	dbg	= 0;
+Awkfloat	srand_seed = 1;
 char	*cmdname;	/* gets argv[0] for error messages */
 extern	FILE	*yyin;	/* lex input file */
 char	*lexprog;	/* points to program argument if it exists */
@@ -65,12 +66,16 @@ int main(int argc, char *argv[])
 	setlocale(LC_NUMERIC, "C"); /* for parsing cmdline & prog */
 	cmdname = argv[0];
 	if (argc == 1) {
-		fprintf(stderr, "usage: %s [-safe] [-V] [-d[n]] [-F fs] "
-		    "[-v var=value] [prog | -f progfile]\n\tfile ...\n",
-		    cmdname);
+		fprintf(stderr, 
+		  "usage: %s [-F fs] [-v var=value] [-f progfile | 'prog'] [file ...]\n", 
+		  cmdname);
 		exit(1);
 	}
 	signal(SIGFPE, fpecatch);
+
+	srand_seed = 1;
+	srand(srand_seed);
+
 	yyin = NULL;
 	symtab = makesymtab(NSYMTAB/NSYMTAB);
 	while (argc > 1 && argv[1][0] == '-' && argv[1][1] != '\0') {
@@ -90,13 +95,18 @@ int main(int argc, char *argv[])
 				safe = 1;
 			break;
 		case 'f':	/* next argument is program filename */
-			argc--;
-			argv++;
-			if (argc <= 1)
-				FATAL("no program filename");
-			if (npfile >= MAX_PFILE - 1)
-				FATAL("too many -f options"); 
-			pfile[npfile++] = argv[1];
+			if (argv[1][2] != 0) {  /* arg is -fsomething */
+				if (npfile >= MAX_PFILE - 1)
+					FATAL("too many -f options"); 
+				pfile[npfile++] = &argv[1][2];
+			} else {		/* arg is -f something */
+				argc--; argv++;
+				if (argc <= 1)
+					FATAL("no program filename");
+				if (npfile >= MAX_PFILE - 1)
+					FATAL("too many -f options"); 
+				pfile[npfile++] = argv[1];
+			}
 			break;
 		case 'F':	/* set field separator */
 			if (argv[1][2] != 0) {	/* arg is -Fsomething */
@@ -115,8 +125,20 @@ int main(int argc, char *argv[])
 				WARNING("field separator FS is empty");
 			break;
 		case 'v':	/* -v a=1 to be done NOW.  one -v for each */
-			if (argv[1][2] == '\0' && --argc > 1 && isclvar((++argv)[1]))
-				setclvar(argv[1]);
+			if (argv[1][2] != 0) {  /* arg is -vsomething */
+				if (isclvar(&argv[1][2]))
+					setclvar(&argv[1][2]);
+				else
+					FATAL("invalid -v option argument: %s", &argv[1][2]);
+			} else {		/* arg is -v something */
+				argc--; argv++;
+				if (argc <= 1)
+					FATAL("no variable name");
+				if (isclvar(argv[1]))
+					setclvar(argv[1]);
+				else
+					FATAL("invalid -v option argument: %s", argv[1]);
+			}
 			break;
 		case 'd':
 			dbg = atoi(&argv[1][2]);

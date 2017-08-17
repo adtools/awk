@@ -1,14 +1,14 @@
 AmigaOS4 port of the official AWK/NAWK.
 
-The official sourcecode has been updated October 23, 2007 + changes from the OpenBSD version.
+The official sourcecode has been updated December 20, 2012.
 
 Please read the original README file for information.
 
-Find the sources on http://sourceforge.net/projects/abc-shell
+Find the sources on https://github.com/adtools/awk
 
 For comments on the port and possible bugfixes, please send an email to me.
 
-To install it, just unpack the content of the SDK directory to your SDK.
+To install it, run the AutoInstall script.
 
 Best regards,
 hnl_dk - Henning Nielsen Lund

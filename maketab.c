@@ -102,7 +102,7 @@ struct xx
 	{ CALL, "call", "call" },
 	{ ARG, "arg", "arg" },
 	{ VARNF, "getnf", "NF" },
-	{ GETLINE, "getline", "getline" },
+	{ GETLINE, "awkgetline", "getline" },
 	{ 0, "", "" },
 };
 
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 	i = 0;
 	while (fgets(buf, sizeof buf, fp) != NULL) {
 		n = sscanf(buf, "%1c %s %s %d", &c, def, name, &tok);
-		if (n != 4 || c != '#' || strcmp(def, "define") != 0)	/* not a valid #define */
+		if (c != '#' || (n != 4 && strcmp(def,"define") != 0))	/* not a valid #define */
 			continue;
 		if (tok < FIRSTTOKEN || tok > LASTTOKEN) {
 			/* fprintf(stderr, "maketab funny token %d %s ignored\n", tok, buf); */
